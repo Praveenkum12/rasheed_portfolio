@@ -1,0 +1,45 @@
+:root {
+  /* Brand */
+  --navy: #0b2a4a;
+  --navy-2: #123a63;
+  --navy-3: #16406b;
+  --yellow: #ffc20e;
+  --yellow-2: #ffd54a;
+  --charcoal: #111820;
+  --dark: #080d13;
+  --dark-2: #0c141d;
+  --white: #ffffff;
+  --panel: #f2f4f7;
+  --muted: #aab4c0;
+  --muted-2: #6b7886;
+  --red: #c8102e;
+  --green: #00843d;
+
+  /* Surfaces */
+  --line: rgba(255, 255, 255, 0.09);
+  --line-2: rgba(255, 255, 255, 0.16);
+  --line-dark: rgba(11, 42, 74, 0.12);
+  --card: rgba(255, 255, 255, 0.035);
+
+  /* Type */
+  --font-head: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+  --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
+  --fs-display: clamp(3rem, 1.2rem + 7.6vw, 8.25rem);
+  --fs-h2: clamp(2.4rem, 1.4rem + 4vw, 4.5rem);
+  --fs-h3: clamp(1.3rem, 1.1rem + 0.8vw, 1.75rem);
+  --fs-lead: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-label: 0.75rem;
+
+  /* Layout */
+  --container: 1240px;
+  --gutter: clamp(16px, 4vw, 48px);
+  --section-y: clamp(96px, 12vw, 168px);
+  --radius: 2px;
+  --nav-h: 76px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
+}
