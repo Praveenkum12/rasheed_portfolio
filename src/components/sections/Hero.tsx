@@ -1,114 +1,116 @@
-import { useEffect, useRef, useState } from 'react';
+import { useRef } from 'react';
+import { ArrowDown } from 'lucide-react';
 import { gsap, SplitText, prefersReducedMotion } from '@/lib/gsap';
 import { useGsap } from '@/animations/useGsap';
 import { useStore } from '@/lib/store';
-import { Button, CvButton } from '@/components/ui/Button';
+import { Button } from '@/components/ui/Button';
+import { scrollTo } from '@/lib/smoothScroll';
 import { profile } from '@/data/profile';
-import { art } from '@/data/assets';
+import { art, triptych } from '@/data/assets';
 
 /**
- * Editorial hero — three depth planes:
- *   back   : giant outlined "SAFETY" word + light (moves slowest, slides sideways on scroll)
- *   middle : real portrait cut-out with warm rim light (medium parallax)
- *   front  : headline, intro, CTAs, meta (moves fastest, fades)
- * No pinning: the section scrolls naturally, so downstream ScrollTriggers stay accurate.
+ * Cinematic hero — a pinned, scroll-scrubbed sequence.
+ *   Frame 1  full-screen photograph, headline rises in (on load: "site lights power on")
+ *   Scroll   headline lifts away; the photo shrinks from full-bleed into a framed card;
+ *            two more cards swing in → Health · Safety · Environment triptych
+ *   Release  page continues into About
+ * Only transform / opacity / clip-path are animated, scrubbed with lag for a weighty feel.
  */
 export function Hero() {
   const root = useRef<HTMLElement>(null);
   const loaded = useStore('loaded');
-  const [bgOk, setBgOk] = useState(true);
 
-  // Pointer depth parallax (desktop only)
-  useEffect(() => {
-    if (!window.matchMedia('(hover: hover) and (pointer: fine)').matches || prefersReducedMotion()) return;
-    const layers = Array.from(root.current!.querySelectorAll<HTMLElement>('[data-depth]')).map((el) => ({
-      d: parseFloat(el.dataset.depth!),
-      x: gsap.quickTo(el, 'x', { duration: 1.6, ease: 'power3' }),
-      y: gsap.quickTo(el, 'y', { duration: 1.6, ease: 'power3' }),
-    }));
-    const move = (e: PointerEvent) => {
-      const nx = e.clientX / innerWidth - 0.5, ny = e.clientY / innerHeight - 0.5;
-      layers.forEach((l) => { l.x(nx * 36 * l.d); l.y(ny * 22 * l.d); });
-    };
-    window.addEventListener('pointermove', move);
-    return () => window.removeEventListener('pointermove', move);
-  }, []);
-
-  // Scroll parallax — created immediately so page measurements are stable from the start
+  // Scroll sequence — built at mount so every later ScrollTrigger measures the pin correctly
   useGsap(root, () => {
     if (prefersReducedMotion()) return;
-    const st = { trigger: root.current, start: 'top top', end: 'bottom top', scrub: true };
-    gsap.to('.hero__word', { xPercent: -18, ease: 'none', scrollTrigger: st });
-    gsap.to('.hero__portrait', { yPercent: 12, scale: 1.04, ease: 'none', scrollTrigger: st });
-    gsap.to('.hero__front', { yPercent: -22, opacity: 0, ease: 'none', scrollTrigger: { ...st, end: '75% top' } });
-    gsap.to('.hero__glow', { opacity: 0.4, scale: 1.2, ease: 'none', scrollTrigger: st });
+    const mm = gsap.matchMedia();
+    mm.add({ desktop: '(min-width: 900px)', mobile: '(max-width: 899px)' }, (ctx) => {
+      const desktop = ctx.conditions!.desktop;
+      const card = desktop ? 'inset(19% 34% 19% 34% round 18px)' : 'inset(17% 7% 27% 7% round 18px)';
+      const tl = gsap.timeline({
+        defaults: { ease: 'none' },
+        scrollTrigger: { trigger: root.current, start: 'top top', end: desktop ? '+=210%' : '+=150%', pin: true, scrub: 1.2, anticipatePin: 1 },
+      });
+      tl.to('.hero__inner', { yPercent: -35, opacity: 0, duration: 0.28, ease: 'power2.in' }, 0)
+        .fromTo('.hero__frame', { clipPath: 'inset(0% 0% 0% 0% round 0px)' }, { clipPath: card, duration: 0.5, ease: 'power2.inOut' }, 0.12)
+        .fromTo('.hero__photo', { scale: 1.06 }, { scale: 1.32, duration: 0.7 }, 0.1)
+        .to('.hero__frame .hero__grade', { opacity: 0.35, duration: 0.4 }, 0.25)
+        .fromTo('.hero__label--c', { opacity: 0, y: 24 }, { opacity: 1, y: 0, duration: 0.14 }, 0.56)
+        .fromTo('.hero__caption', { opacity: 0, y: 30 }, { opacity: 1, y: 0, duration: 0.16 }, 0.62);
+      if (desktop) {
+        tl.fromTo('.hero__side--l', { xPercent: -150, rotate: -9, opacity: 0 }, { xPercent: 0, rotate: 0, opacity: 1, duration: 0.36, ease: 'power3.out' }, 0.42)
+          .fromTo('.hero__side--r', { xPercent: 150, rotate: 9, opacity: 0 }, { xPercent: 0, rotate: 0, opacity: 1, duration: 0.36, ease: 'power3.out' }, 0.46)
+          .fromTo('.hero__side img', { scale: 1.3 }, { scale: 1, duration: 0.4 }, 0.42);
+      }
+      tl.to({}, { duration: 0.18 }); // hold the finished composition before release
+    });
+    return () => mm.revert();
   }, []);
 
-  // Entrance — starts as the loader curtain lifts
+  // Load entrance — runs as the loader lifts
   useGsap(root, () => {
     if (prefersReducedMotion()) return;
-    gsap.set('.hero__front, .hero__portrait-wrap, .hero__word-wrap', { visibility: 'hidden' });
+    gsap.set('.hero__inner', { visibility: 'hidden' });
+    gsap.set('.hero__exposure', { opacity: 1 });
     if (!loaded) return;
-    const split = SplitText.create('.hero__title .line > span', { type: 'chars', charsClass: 'hchar' });
+    const split = SplitText.create('.hero__title .line > span', { type: 'words,chars', wordsClass: 'hword', charsClass: 'hchar' });
     gsap.timeline({ defaults: { ease: 'expo' } })
-      .set('.hero__front, .hero__portrait-wrap, .hero__word-wrap', { visibility: 'visible' })
-      .fromTo('.hero__glow', { opacity: 0, scale: 0.7 }, { opacity: 1, scale: 1, duration: 2.4 }, 0)
-      .fromTo('.hero__word-wrap', { opacity: 0, xPercent: 6 }, { opacity: 1, xPercent: 0, duration: 2.2 }, 0.1)
-      .fromTo('.hero__portrait-wrap', { clipPath: 'inset(100% 0 0 0)', yPercent: 6 }, { clipPath: 'inset(0% 0 0 0)', yPercent: 0, duration: 1.8, ease: 'inout' }, 0.2)
-      .fromTo('.hero .eyebrow', { opacity: 0, x: -24 }, { opacity: 1, x: 0, duration: 1 }, 0.6)
-      .fromTo(split.chars, { yPercent: 115, rotate: 7 }, { yPercent: 0, rotate: 0, stagger: 0.022, duration: 1.3 }, 0.7)
-      .fromTo('.hero__reveal', { opacity: 0, y: 26 }, { opacity: 1, y: 0, stagger: 0.09, duration: 1.1 }, 1.25);
+      .to('.hero__exposure', { keyframes: { opacity: [1, 0.55, 0.8, 0.25, 0] }, duration: 2.2, ease: 'power1.inOut' }, 0)
+      .fromTo('.hero__photo-wrap', { scale: 1.2 }, { scale: 1, duration: 3.2 }, 0)
+      .set('.hero__inner', { visibility: 'visible' }, 0.5)
+      .fromTo('.hero__kicker', { opacity: 0, y: 16 }, { opacity: 1, y: 0, duration: 1 }, 0.6)
+      .fromTo(split.chars, { yPercent: 118 }, { yPercent: 0, stagger: 0.028, duration: 1.4 }, 0.7)
+      .fromTo('.hero__rule', { scaleX: 0 }, { scaleX: 1, duration: 1.4, ease: 'inout' }, 1.2)
+      .fromTo('.hero__actions > *', { opacity: 0, y: 20 }, { opacity: 1, y: 0, stagger: 0.1, duration: 1 }, 1.5);
     return () => split.revert();
   }, [loaded]);
 
   const [l1, l2] = profile.heroHeading;
+  const [left, right] = triptych;
   return (
     <section id="home" className="hero" ref={root} aria-labelledby="hero-title">
-      {/* BACK plane */}
-      <div className="hero__back" aria-hidden="true">
-        {bgOk && <img className="hero__photo" src={art.heroBg.src} alt="" onError={() => setBgOk(false)} />}
-        <div className="hero__glow" />
-        <div className="hero__cols">{Array.from({ length: 6 }).map((_, i) => <i key={i} />)}</div>
-        <div className="hero__word-wrap" data-depth="0.35"><span className="hero__word">Safety</span></div>
-      </div>
+      <div className="hero__glow" aria-hidden="true" />
 
-      {/* MIDDLE plane — real photo */}
-      <div className="hero__portrait-wrap" data-depth="0.7" aria-hidden="true">
-        <img className="hero__portrait" src={art.heroFg.src} alt="" width={928} height={928} fetchPriority="high" />
-      </div>
-      <div className="hero__fade" aria-hidden="true" />
+      {/* Side cards of the triptych */}
+      <figure className="hero__side hero__side--l" aria-hidden="true">
+        <img src={left.src} alt="" loading="eager" style={{ objectPosition: left.position }} />
+        <figcaption><span>01</span>{left.label}</figcaption>
+      </figure>
+      <figure className="hero__side hero__side--r" aria-hidden="true">
+        <img src={right.src} alt="" loading="eager" style={{ objectPosition: right.position }} />
+        <figcaption><span>03</span>{right.label}</figcaption>
+      </figure>
 
-      {/* FRONT plane */}
-      <div className="hero__front">
-        <div className="container hero__grid">
-          <div className="hero__main">
-            <p className="eyebrow">{profile.heroLabel}</p>
-            <h1 className="h-display hero__title" id="hero-title">
-              <span className="line"><span>{l1}</span></span>
-              <span className="line"><span className="accent">{l2}</span></span>
-            </h1>
-            <p className="lead hero__support hero__reveal">{profile.heroSupport}</p>
-            <div className="btn-row hero__ctas hero__reveal">
-              <Button variant="primary" href="#projects">Explore my work</Button>
-              <CvButton label="Download my CV" />
-            </div>
-          </div>
-
-          <aside className="hero__side hero__reveal">
-            <p className="hero__name">{profile.name}</p>
-            <p className="hero__role">{profile.designation} · {profile.location}</p>
-            <dl className="hero__meta">
-              <div><dt>Current</dt><dd>Gulf Paramount Electrical Services Co. S.P.C.</dd></div>
-              <div><dt>Certified</dt><dd>{profile.certificationsSummary}</dd></div>
-            </dl>
-          </aside>
+      {/* Main frame: full-bleed → centre card */}
+      <div className="hero__frame" aria-hidden="true">
+        <div className="hero__photo-wrap">
+          <img className="hero__photo" src={art.heroBg.src} alt="" fetchPriority="high" style={{ objectPosition: art.heroBg.position }} />
         </div>
-        <div className="container hero__foot hero__reveal">
-          <span className="scroll-cue"><span className="scroll-cue__mouse" /> Scroll to explore</span>
-          <span className="hero__coords">29.3759° N · 47.9774° E — Kuwait</span>
-        </div>
+        <div className="hero__grade" />
+        <div className="hero__exposure" />
       </div>
+      <p className="hero__label--c" aria-hidden="true"><span>02</span>Safety</p>
+      <p className="hero__caption" aria-hidden="true">Three disciplines. <em>One standard.</em></p>
       <div className="hero__grain" aria-hidden="true" />
+
+      <div className="container hero__inner">
+        <p className="hero__kicker">
+          <span>{profile.name}</span>
+          <i aria-hidden="true" />
+          <span>{profile.designation} · {profile.location}</span>
+        </p>
+        <h1 className="hero__title" id="hero-title">
+          <span className="line"><span>{l1}</span></span>
+          <span className="line"><span className="accent">{l2}</span></span>
+        </h1>
+        <div className="hero__rule" aria-hidden="true" />
+        <div className="hero__actions">
+          <Button variant="primary" href="#projects">Explore my work</Button>
+          <button className="hero__scroll" onClick={() => scrollTo('#about')} aria-label="Scroll to About">
+            <ArrowDown size={18} />
+          </button>
+        </div>
+      </div>
     </section>
   );
 }

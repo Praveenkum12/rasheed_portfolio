@@ -68,7 +68,7 @@ export function Expertise() {
               const a = expertiseArt[e.id];
               return (
                 <article className="xs__panel" key={e.id}>
-                  <Media src={a?.src} alt={a?.alt ?? e.title} icon={e.icon} tint={tint[i % 4]} illustrative={a?.illustrative} />
+                  <Media src={a?.src} alt={a?.alt ?? e.title} icon={e.icon} tint={tint[i % 4]} illustrative={a?.illustrative} position={a?.position} />
                   <div className="xs__shade" />
                   <div className="xs__content">
                     <span className="xs__num">{String(i + 1).padStart(2, '0')} / 04</span>

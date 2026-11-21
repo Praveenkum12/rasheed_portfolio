@@ -20,7 +20,7 @@ export function Achievements() {
   });
 
   return (
-    <section id="achievements" className="section section--navy" ref={root} aria-labelledby="ach-title">
+    <section id="achievements" className="section section--yellow" ref={root} aria-labelledby="ach-title">
       <div className="container">
         <SectionHeading index="08" label="Achievements" id="ach-title" title="Initiatives that matter."
           lead="Safety work delivered across campaigns, training, inspections and audit readiness. Figures appear only when verified." />

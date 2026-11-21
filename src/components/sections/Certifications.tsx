@@ -28,7 +28,7 @@ export function Certifications() {
   });
 
   return (
-    <section id="certifications" className="section section--light" ref={root} aria-labelledby="cert-title">
+    <section id="certifications" className="section section--navy-deep" ref={root} aria-labelledby="cert-title">
       <div className="container">
         <SectionHeading index="06" label="Certifications" id="cert-title" title="Qualified & certified."
           lead="Professional HSE certifications and engineering education. Certificate scans open full-size once uploaded." />

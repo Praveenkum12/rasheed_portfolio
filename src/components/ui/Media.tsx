@@ -22,6 +22,8 @@ type Props = {
   className?: string;
   eager?: boolean;
   sizes?: string;
+  /** CSS object-position for art direction / crops */
+  position?: string;
 };
 
 /**
@@ -29,7 +31,7 @@ type Props = {
  * branded gradient + line icon instead of a broken image. Illustrative art gets a
  * discreet label so it is never presented as genuine evidence of work.
  */
-export function Media({ src, alt, icon, tint = 'steel', illustrative, verified, className = '', eager, sizes }: Props) {
+export function Media({ src, alt, icon, tint = 'steel', illustrative, verified, className = '', eager, sizes, position }: Props) {
   const [failed, setFailed] = useState(!src);
   const [loaded, setLoaded] = useState(false);
   const [c1, c2] = tints[tint];
@@ -37,6 +39,7 @@ export function Media({ src, alt, icon, tint = 'steel', illustrative, verified, 
     <div className={`media ${className}`} style={{ background: `radial-gradient(120% 90% at 70% 20%, ${c1}, ${c2})` }}>
       {!failed && (
         <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" sizes={sizes}
+          style={position ? { objectPosition: position } : undefined}
           className={loaded ? 'is-loaded' : ''} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
       )}
       {failed && (

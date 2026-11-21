@@ -8,7 +8,11 @@ import { Media, tintFor } from '@/components/ui/Media';
 import { Modal } from '@/components/ui/Modal';
 import { Lightbox } from '@/components/ui/Lightbox';
 import { projects, projectCategories } from '@/data/projects';
-import { categoryArt } from '@/data/assets';
+import { projectArt, categoryArt } from '@/data/assets';
+
+const artOf = (p: Project) => p.coverImage
+  ? { src: p.coverImage, illustrative: false, position: undefined }
+  : { src: (projectArt[p.id] ?? categoryArt[p.category])?.src, illustrative: true, position: (projectArt[p.id] ?? categoryArt[p.category])?.position };
 import type { Project } from '@/data/types';
 
 function Pending({ children = 'To be added once verified.' }: { children?: string }) {
@@ -22,7 +26,7 @@ function CaseStudy({ p }: { p: Project }) {
     : <Pending />;
   return (
     <>
-      <div className="modal__cover"><Media src={p.coverImage || categoryArt[p.category]?.src} alt={p.title} icon={p.icon} tint={tintFor(p.category)} illustrative={!p.coverImage} eager /></div>
+      <div className="modal__cover"><Media {...artOf(p)} alt={p.title} icon={p.icon} tint={tintFor(p.category)} eager /></div>
       <div className="modal__body">
         <div data-modal-reveal>
           <span className="proj__cat">{p.category}</span>
@@ -102,7 +106,7 @@ export function Projects() {
   }, [filter, sort]);
 
   return (
-    <section id="projects" className="section section--charcoal" ref={root} aria-labelledby="proj-title">
+    <section id="projects" className="section section--light" ref={root} aria-labelledby="proj-title">
       <div className="container">
         <SectionHeading index="05" label="Project Portfolio" id="proj-title" title="Proof of work."
           lead="Selected HSE programmes presented as case studies — background, responsibilities, activities and verified results." />
@@ -125,7 +129,7 @@ export function Projects() {
         <div className="proj-grid" ref={grid}>
           {list.map((p) => (
             <button key={p.id} data-flip-id={p.id} className={`proj proj--${p.size ?? 'md'}`} onClick={() => setOpen(p)} data-cursor="view" aria-haspopup="dialog" aria-label={`Open case study: ${p.title}`}>
-              <Media src={p.coverImage || categoryArt[p.category]?.src} alt={p.title} icon={p.icon} tint={tintFor(p.category)} illustrative={!p.coverImage} />
+              <Media {...artOf(p)} alt={p.title} icon={p.icon} tint={tintFor(p.category)} />
               {p.featured && <span className="tag tag--yellow proj__featured" style={{ background: 'rgba(8,13,19,0.7)' }}>Featured</span>}
               <span className="proj__open" aria-hidden="true"><ArrowUpRight size={22} /></span>
               <div className="proj__overlay">

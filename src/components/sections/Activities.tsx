@@ -9,15 +9,17 @@ import { Modal } from '@/components/ui/Modal';
 import { Lightbox } from '@/components/ui/Lightbox';
 import { Button } from '@/components/ui/Button';
 import { activities, activityCategories } from '@/data/activities';
-import { categoryArt } from '@/data/assets';
+import { activityArt, categoryArt } from '@/data/assets';
 import type { Activity } from '@/data/types';
 
 const INITIAL = 6;
 
 /** Cover = real photo if provided, else illustrative category art. */
-const coverOf = (a: Activity) => a.coverImage
-  ? { src: a.coverImage, illustrative: false }
-  : { src: categoryArt[a.category]?.src, illustrative: true };
+const coverOf = (a: Activity) => {
+  if (a.coverImage) return { src: a.coverImage, illustrative: false, position: undefined };
+  const art = activityArt[a.id] ?? categoryArt[a.category];
+  return { src: art?.src, illustrative: true, position: art?.position };
+};
 
 export function Activities() {
   const root = useRef<HTMLElement>(null);
@@ -35,7 +37,7 @@ export function Activities() {
 
   useGsap(root, () => {
     if (prefersReducedMotion()) return;
-    gsap.from('.act-card', { y: 70, opacity: 0, stagger: 0.08, duration: 1.2, scrollTrigger: { trigger: grid.current, start: 'top 85%', once: true } });
+    gsap.from('.act-card', { y: 70, opacity: 0, stagger: 0.08, duration: 1.2, clearProps: 'transform,opacity', scrollTrigger: { trigger: grid.current, start: 'top 85%', once: true } });
   });
 
   // Smooth swap: current cards drift out, state changes, new cards rise in
@@ -51,7 +53,7 @@ export function Activities() {
   useLayoutEffect(() => {
     if (!busy.current) return;
     const cards = grid.current!.querySelectorAll('.act-card');
-    gsap.fromTo(cards, { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: 'expo', onComplete: () => { busy.current = false; } });
+    gsap.fromTo(cards, { opacity: 0, y: 34 }, { opacity: 1, y: 0, duration: 0.8, stagger: 0.06, ease: 'expo', clearProps: 'transform,opacity', onComplete: () => { busy.current = false; } });
     ScrollTrigger.refresh();
   }, [filter, showAll]);
 
@@ -75,7 +77,7 @@ export function Activities() {
             const cover = coverOf(a);
             return (
               <button key={a.id} className="act-card" onClick={() => setOpen(a)} data-cursor="view" aria-haspopup="dialog">
-                <Media src={cover.src} alt={a.title} icon={a.icon} tint={tintFor(a.category)} illustrative={cover.illustrative} />
+                <Media src={cover.src} alt={a.title} icon={a.icon} tint={tintFor(a.category)} illustrative={cover.illustrative} position={cover.position} />
                 <span className="act-card__cat" style={{ position: 'absolute' }}>{a.category}</span>
                 <div className="act-card__body">
                   <h3 className="act-card__title">{a.title}</h3>
@@ -105,7 +107,7 @@ export function Activities() {
           const cover = coverOf(open);
           return (
             <>
-              <div className="modal__cover"><Media src={cover.src} alt={open.title} icon={open.icon} tint={tintFor(open.category)} illustrative={cover.illustrative} eager /></div>
+              <div className="modal__cover"><Media src={cover.src} alt={open.title} icon={open.icon} tint={tintFor(open.category)} illustrative={cover.illustrative} position={cover.position} eager /></div>
               <div className="modal__body">
                 <div data-modal-reveal>
                   <span className="proj__cat">{open.category}</span>

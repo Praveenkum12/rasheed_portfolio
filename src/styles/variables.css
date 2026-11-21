@@ -1,45 +1,50 @@
 :root {
-  /* Brand */
-  --navy: #0b2a4a;
+  /* ---------- Brand (from the HSE identity brief) ---------- */
+  --navy: #0b2a4a;          /* Corporate Navy */
+  --navy-deep: #071d35;
   --navy-2: #123a63;
-  --navy-3: #16406b;
-  --yellow: #ffc20e;
-  --yellow-2: #ffd54a;
+  --navy-3: #1d5287;
+  --yellow: #ffc20e;        /* Safety Yellow */
+  --yellow-soft: #ffd75e;
   --charcoal: #111820;
-  --dark: #080d13;
-  --dark-2: #0c141d;
+  --dark: #080d13;          /* Night */
+  --dark-2: #0c131b;        /* Lifted night */
+  --ink: #0d1620;           /* text on light */
   --white: #ffffff;
-  --panel: #f2f4f7;
+  --paper: #f2f4f7;         /* Panel Grey */
+  --paper-2: #e7ebf0;
   --muted: #aab4c0;
   --muted-2: #6b7886;
-  --red: #c8102e;
-  --green: #00843d;
+  --slate: #4a5868;         /* secondary text on light */
+  --red: #c8102e;           /* hazard only */
+  --green: #00843d;         /* compliant only */
 
-  /* Surfaces */
+  /* ---------- Surfaces ---------- */
   --line: rgba(255, 255, 255, 0.09);
   --line-2: rgba(255, 255, 255, 0.16);
-  --line-dark: rgba(11, 42, 74, 0.12);
+  --line-ink: rgba(11, 42, 74, 0.12);
   --card: rgba(255, 255, 255, 0.035);
 
-  /* Type */
+  /* ---------- Type ---------- */
   --font-head: 'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
   --font-body: 'Manrope', ui-sans-serif, system-ui, sans-serif;
   --fs-display: clamp(3rem, 1.2rem + 7.6vw, 8.25rem);
-  --fs-h2: clamp(2.4rem, 1.4rem + 4vw, 4.5rem);
+  --fs-h2: clamp(2.4rem, 1.3rem + 4.2vw, 4.75rem);
   --fs-h3: clamp(1.3rem, 1.1rem + 0.8vw, 1.75rem);
   --fs-lead: clamp(1.05rem, 0.98rem + 0.35vw, 1.25rem);
   --fs-body: 1rem;
   --fs-small: 0.875rem;
-  --fs-label: 0.75rem;
+  --fs-label: 0.72rem;
 
-  /* Layout */
+  /* ---------- Layout ---------- */
   --container: 1240px;
   --gutter: clamp(16px, 4vw, 48px);
-  --section-y: clamp(96px, 12vw, 168px);
-  --radius: 2px;
+  --section-y: clamp(96px, 11vw, 160px);
+  --sheet-r: clamp(20px, 2.6vw, 36px);  /* rounded top of stacked section sheets */
+  --radius: 4px;
   --nav-h: 76px;
 
-  /* Motion */
+  /* ---------- Motion ---------- */
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-inout: cubic-bezier(0.76, 0, 0.24, 1);
 }

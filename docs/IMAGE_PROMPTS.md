@@ -1,5 +1,11 @@
 # Image prompts — HSE Portfolio
 
+> ### Status
+> **In use:** hero-bg, contact-bg, expertise-occupational, expertise-environment, expertise-systems, activity-campaign.
+> **Still needed** (currently filled with re-cropped duplicates): `expertise-fire`, `activity-toolbox`,
+> `activity-inspection`, `activity-training`, `activity-fire`, `activity-5s`, `activity-documentation`.
+> Ask the generator for **photographs** — flat vector drawings were rejected. Then map them in `src/data/assets.ts`.
+
 Generate these in any image model (Midjourney, DALL·E, Firefly, Imagen, etc.).
 Save each result into **`public/images/_incoming/`** using the exact **file name** shown,
 then run:

@@ -15,8 +15,9 @@ const loadImage = (src: string) => new Promise<void>((res) => {
 });
 
 /**
- * Genuine loader: progress = fonts + critical images actually loaded (never artificial).
+ * Honest loader: progress = fonts + critical images actually loaded (never a fake timeline).
  * Always starts the visit at the top of the page and locks scrolling until the reveal.
+ * All markup is styled in globals.css (.pl*) and visible from the very first paint.
  */
 export function Preloader() {
   const root = useRef<HTMLDivElement>(null);
@@ -25,7 +26,6 @@ export function Preloader() {
   const [step, setStep] = useState(0);
 
   useEffect(() => {
-    // A reload mid-page must not reveal the middle of the page behind the loader
     if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
     lockScroll(true);
@@ -43,14 +43,14 @@ export function Preloader() {
     const advance = () => {
       ready = Math.min(total, ready + 1);
       setStep(Math.min(STEPS.length - 2, Math.floor((ready / total) * (STEPS.length - 1))));
-      gsap.to(p, { v: (ready / total) * 100, duration: reduced ? 0 : 0.8, ease: 'power2.out', overwrite: true, onUpdate: render,
+      gsap.to(p, { v: (ready / total) * 100, duration: reduced ? 0 : 0.7, ease: 'power2.out', overwrite: true, onUpdate: render,
         onComplete: () => { if (ready >= total) exit(); } });
     };
 
+    // Elements are visible by default; the intro only adds polish.
     const intro = reduced ? null : gsap.timeline({ defaults: { ease: 'expo' } })
-      .from('.pl__mark', { scale: 0.8, opacity: 0, duration: 1.2 })
-      .from('.pl__line > *', { yPercent: 110, stagger: 0.08, duration: 1 }, 0.2)
-      .from('.pl__foot', { opacity: 0, duration: 0.8 }, 0.4);
+      .fromTo('.pl__mark', { scale: 0.85, opacity: 0 }, { scale: 1, opacity: 1, duration: 1 })
+      .fromTo('.pl__line > *', { yPercent: 110 }, { yPercent: 0, stagger: 0.08, duration: 0.9 }, 0.15);
 
     const exit = () => {
       if (finished) return;
@@ -63,17 +63,18 @@ export function Preloader() {
         ScrollTrigger.refresh();
       };
       if (reduced) { finish(); setDone(true); return; }
-      gsap.timeline({ delay: 0.3, onComplete: () => setDone(true) })
-        .to('.pl__line > *', { yPercent: -110, stagger: 0.05, duration: 0.6, ease: 'power3.in' })
-        .to('.pl__mark', { scale: 1.12, opacity: 0, duration: 0.6, ease: 'power3.in' }, 0)
-        .to('.pl__foot', { opacity: 0, duration: 0.4 }, 0)
-        .add(finish, 0.55)
-        .to(el, { clipPath: 'inset(0 0 100% 0)', duration: 1.1, ease: 'inout' }, 0.5);
+      intro?.progress(1);
+      gsap.timeline({ delay: 0.35, onComplete: () => setDone(true) })
+        .to('.pl__line > *', { yPercent: -110, stagger: 0.05, duration: 0.55, ease: 'power3.in' })
+        .to('.pl__mark', { scale: 1.1, opacity: 0, duration: 0.55, ease: 'power3.in' }, 0)
+        .to('.pl__foot, .pl__bar', { opacity: 0, duration: 0.35 }, 0)
+        .add(finish, 0.5)
+        .to(el, { clipPath: 'inset(0 0 100% 0)', duration: 1, ease: 'inout' }, 0.45);
     };
 
     document.fonts.ready.then(advance);
     criticalImages.forEach((src) => loadImage(src).then(advance));
-    const cap = setTimeout(() => { ready = total - 1; advance(); }, 7000);
+    const cap = setTimeout(() => { ready = total - 1; advance(); }, 6000);
     return () => { clearTimeout(cap); intro?.kill(); };
   }, []);
 
