@@ -38,9 +38,12 @@ export function Media({ src, alt, icon, tint = 'steel', illustrative, verified, 
   return (
     <div className={`media ${className}`} style={{ background: `radial-gradient(120% 90% at 70% 20%, ${c1}, ${c2})` }}>
       {!failed && (
-        <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" sizes={sizes}
-          style={position ? { objectPosition: position } : undefined}
-          className={loaded ? 'is-loaded' : ''} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
+        // .media__inner is the scroll-parallax layer (GSAP); the img keeps its own CSS hover zoom.
+        <div className="media__inner">
+          <img src={src} alt={alt} loading={eager ? 'eager' : 'lazy'} decoding="async" sizes={sizes}
+            style={position ? { objectPosition: position } : undefined}
+            className={loaded ? 'is-loaded' : ''} onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
+        </div>
       )}
       {failed && (
         <>

@@ -38,6 +38,9 @@ export const triptych = [
   { src: LIB.bins, label: 'Environment', position: '50% 60%' },
 ];
 
+/** Full-bleed interlude between Activities and Projects. */
+export const interludeArt = { src: LIB.loto, position: '45% 45%' };
+
 /** Per-activity cover art — chosen so no two neighbouring cards repeat. */
 export const activityArt: Record<string, Art> = {
   'hydration-campaign': ill(LIB.campaign, 'Workers at a hydration station on site'),

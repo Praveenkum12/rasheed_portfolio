@@ -29,7 +29,7 @@ export function Expertise() {
       panels.slice(1).forEach((p, i) => {
         const at = i + 0.15;
         tl.to(p, { clipPath: 'inset(0% 0 0 0)', duration: 0.7, ease: 'power2.inOut' }, at)
-          .fromTo(p.querySelector('.media img, .media__icon'), { scale: 1.25 }, { scale: 1, duration: 0.9 }, at)
+          .fromTo(p.querySelector('.media__inner, .media__icon'), { scale: 1.25 }, { scale: 1, duration: 0.9 }, at)
           .from(p.querySelectorAll('.xs__items li'), { y: 24, opacity: 0, stagger: 0.04, duration: 0.3 }, at + 0.35)
           .to(titles[i], { opacity: 0.22, duration: 0.3 }, at)
           .to(titles[i + 1], { opacity: 1, duration: 0.3 }, at);
@@ -48,6 +48,7 @@ export function Expertise() {
 
   return (
     <section id="expertise" className="section section--navy" ref={root} aria-labelledby="expertise-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="container">
         <SectionHeading index="03" label="HSE Expertise" id="expertise-title" title="Areas of expertise."
           lead="Four disciplines that shape every working day — from the shop floor to the management system." />

@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { initSmoothScroll } from '@/lib/smoothScroll';
+import { useCinematic } from '@/animations/useCinematic';
 import { ScrollTrigger } from '@/lib/gsap';
 import { Preloader } from '@/components/layout/Preloader';
 import { Navbar } from '@/components/layout/Navbar';
@@ -12,12 +13,14 @@ import { Experience } from '@/components/sections/Experience';
 import { Expertise } from '@/components/sections/Expertise';
 import { Activities } from '@/components/sections/Activities';
 import { Projects } from '@/components/sections/Projects';
+import { Interlude } from '@/components/sections/Interlude';
 import { Certifications } from '@/components/sections/Certifications';
 import { Skills } from '@/components/sections/Skills';
 import { Achievements } from '@/components/sections/Achievements';
 import { Contact } from '@/components/sections/Contact';
 
 export default function App() {
+  useCinematic();
   useEffect(() => {
     initSmoothScroll();
     // Refresh triggers once fonts & images settle to avoid layout drift
@@ -40,6 +43,7 @@ export default function App() {
         <Experience />
         <Expertise />
         <Activities />
+        <Interlude />
         <Projects />
         <Certifications />
         <Skills />

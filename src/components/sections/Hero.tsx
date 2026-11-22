@@ -69,6 +69,7 @@ export function Hero() {
   const [left, right] = triptych;
   return (
     <section id="home" className="hero" ref={root} aria-labelledby="hero-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="hero__glow" aria-hidden="true" />
 
       {/* Side cards of the triptych */}

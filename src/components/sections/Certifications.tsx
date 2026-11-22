@@ -23,12 +23,17 @@ export function Certifications() {
   useGsap(root, () => {
     if (prefersReducedMotion()) return;
     const st = { trigger: '.cert-grid', start: 'top 82%', once: true };
-    gsap.from('.cert', { y: 90, opacity: 0, stagger: 0.12, duration: 1.3, scrollTrigger: st, clearProps: 'transform,opacity' });
+    // Cards are dealt onto the table: they fly up, untwist and settle in 3D
+    gsap.from('.cert', {
+      y: 220, rotateX: 55, rotateZ: (i) => (i - 1) * 9, opacity: 0, transformPerspective: 1200, transformOrigin: '50% 100%',
+      stagger: 0.14, duration: 1.5, ease: 'expo', scrollTrigger: st, clearProps: 'transform,opacity',
+    });
     gsap.from('.cert__seal', { scale: 0, rotate: -90, stagger: 0.12, duration: 1.2, ease: 'back.out(1.6)', delay: 0.35, scrollTrigger: st });
   });
 
   return (
     <section id="certifications" className="section section--navy-deep" ref={root} aria-labelledby="cert-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="container">
         <SectionHeading index="06" label="Certifications" id="cert-title" title="Qualified & certified."
           lead="Professional HSE certifications and engineering education. Certificate scans open full-size once uploaded." />

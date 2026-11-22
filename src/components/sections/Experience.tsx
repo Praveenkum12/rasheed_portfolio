@@ -16,15 +16,21 @@ export function Experience() {
     // Timeline line draws with scroll
     gsap.to('.timeline__fill', { scaleY: 1, ease: 'none', scrollTrigger: { trigger: '.timeline', start: 'top 70%', end: 'bottom 70%', scrub: 0.6 } });
     gsap.utils.toArray<HTMLElement>('.timeline__item').forEach((item) => {
-      gsap.timeline({ scrollTrigger: { trigger: item, start: 'top 80%', once: true } })
-        .from(item.querySelector('.timeline__node'), { scale: 0, duration: 0.8, ease: 'back.out(2.5)' })
-        .from(item.querySelector('.xp-card'), { y: 80, autoAlpha: 0, duration: 1.3 }, 0.1)
-        .from(item.querySelectorAll('.resp li'), { x: -20, autoAlpha: 0, stagger: 0.04, duration: 0.8 }, 0.5);
+      const card = item.querySelector('.xp-card, .xp-empty');
+      // Card rises and tilts up into place in 3D, tied to scroll
+      gsap.fromTo(card, { rotateX: 16, y: 140, opacity: 0, transformPerspective: 1400, transformOrigin: '50% 100%' },
+        { rotateX: 0, y: 0, opacity: 1, ease: 'none', scrollTrigger: { trigger: item, start: 'top bottom', end: 'top 40%', scrub: 1 } });
+      gsap.from(item.querySelector('.timeline__node'), { scale: 0, duration: 0.8, ease: 'back.out(2.5)', scrollTrigger: { trigger: item, start: 'top 70%', once: true } });
+      // Responsibilities light up one by one as you read
+      const list = item.querySelector('.resp');
+      if (list) gsap.fromTo(list.children, { opacity: 0.18 }, { opacity: 1, stagger: 0.1, ease: 'none',
+        scrollTrigger: { trigger: list, start: 'top 75%', end: 'bottom 45%', scrub: true } });
     });
   });
 
   return (
     <section id="experience" className="section section--light" ref={root} aria-labelledby="xp-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="grid-lines" aria-hidden="true">{Array.from({ length: 7 }).map((_, i) => <span key={i} />)}</div>
       <div className="container xp">
         <aside className="xp__aside">

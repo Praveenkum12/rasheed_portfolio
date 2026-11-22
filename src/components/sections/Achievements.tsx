@@ -11,7 +11,11 @@ export function Achievements() {
   useReveal(root);
   useGsap(root, () => {
     if (prefersReducedMotion()) return;
-    gsap.from('.ach', { autoAlpha: 0, y: 60, stagger: { each: 0.08, grid: 'auto' }, duration: 1.2, scrollTrigger: { trigger: '.ach-grid', start: 'top 82%', once: true } });
+    gsap.fromTo('.bigword', { xPercent: -30 }, { xPercent: 6, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom top', scrub: true } });
+    // Tiles wipe open row by row (clip-path), content rises inside each tile
+    gsap.fromTo('.ach', { clipPath: 'inset(100% 0% 0% 0%)' }, { clipPath: 'inset(0% 0% 0% 0%)', duration: 1.2, ease: 'inout', stagger: { each: 0.1, grid: 'auto' }, clearProps: 'clipPath',
+      scrollTrigger: { trigger: '.ach-grid', start: 'top 80%', once: true } });
+    gsap.from('.ach > *', { y: 40, opacity: 0, duration: 1, stagger: 0.03, delay: 0.35, scrollTrigger: { trigger: '.ach-grid', start: 'top 80%', once: true } });
     // Count-up only for verified numeric metrics
     gsap.utils.toArray<HTMLElement>('.ach__metric[data-n]').forEach((el) => {
       const n = parseFloat(el.dataset.n!), o = { v: 0 };
@@ -21,6 +25,8 @@ export function Achievements() {
 
   return (
     <section id="achievements" className="section section--yellow" ref={root} aria-labelledby="ach-title">
+      <div className="sheet-shade" aria-hidden="true" />
+      <div className="bigword bigword--ink" aria-hidden="true">Prevention</div>
       <div className="container">
         <SectionHeading index="08" label="Achievements" id="ach-title" title="Initiatives that matter."
           lead="Safety work delivered across campaigns, training, inspections and audit readiness. Figures appear only when verified." />

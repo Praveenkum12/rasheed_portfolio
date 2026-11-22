@@ -37,7 +37,9 @@ export function Activities() {
 
   useGsap(root, () => {
     if (prefersReducedMotion()) return;
-    gsap.from('.act-card', { y: 70, opacity: 0, stagger: 0.08, duration: 1.2, clearProps: 'transform,opacity', scrollTrigger: { trigger: grid.current, start: 'top 85%', once: true } });
+    // Cards open like shutters (clip-path) and rise, row by row
+    gsap.fromTo('.act-card', { clipPath: 'inset(100% 0% 0% 0% round 4px)', y: 60 }, { clipPath: 'inset(0% 0% 0% 0% round 4px)', y: 0, duration: 1.3, ease: 'expo',
+      stagger: { each: 0.09, grid: 'auto' }, clearProps: 'clipPath,transform', scrollTrigger: { trigger: grid.current, start: 'top 85%', once: true } });
   });
 
   // Smooth swap: current cards drift out, state changes, new cards rise in
@@ -59,6 +61,7 @@ export function Activities() {
 
   return (
     <section id="activities" className="section" ref={root} aria-labelledby="act-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="container">
         <SectionHeading index="04" label="HSE Activities" id="act-title" title="On-site safety activities."
           lead="Campaigns, toolbox talks, inspections and training delivered in the field. Open any activity for details and photographs." />

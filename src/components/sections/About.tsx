@@ -38,6 +38,7 @@ export function About() {
 
   return (
     <section id="about" className="section" ref={root} aria-labelledby="about-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="container">
         <div className="statement">
           <p className="eyebrow"><span className="eyebrow__num">01</span> / About me</p>

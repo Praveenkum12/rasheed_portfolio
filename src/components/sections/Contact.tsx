@@ -15,6 +15,11 @@ export function Contact() {
     if (prefersReducedMotion()) return;
     const split = SplitText.create('.contact__heading .ln', { type: 'chars', mask: 'chars' });
     gsap.from(split.chars, { yPercent: 120, stagger: 0.025, duration: 1.3, scrollTrigger: { trigger: '.contact__heading', start: 'top 80%', once: true } });
+    // Headline lines glide in from opposite sides; the photo settles as the section arrives
+    const st = { trigger: root.current, start: 'top bottom', end: 'top 20%', scrub: 1 };
+    gsap.fromTo('.contact__heading .ln:nth-child(1)', { xPercent: -10 }, { xPercent: 0, ease: 'none', scrollTrigger: st });
+    gsap.fromTo('.contact__heading .ln:nth-child(2)', { xPercent: 10 }, { xPercent: 0, ease: 'none', scrollTrigger: st });
+    gsap.fromTo('.contact__bg', { scale: 1.25 }, { scale: 1, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'bottom bottom', scrub: true } });
     gsap.fromTo('.contact__glow', { scale: 0.6, autoAlpha: 0 }, { scale: 1, autoAlpha: 1, ease: 'none', scrollTrigger: { trigger: root.current, start: 'top bottom', end: 'center center', scrub: true } });
     return () => split.revert();
   });
@@ -30,6 +35,7 @@ export function Contact() {
 
   return (
     <section id="contact" className="section contact" ref={root} aria-labelledby="contact-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <img className="contact__bg" src={art.contactBg.src} alt="" aria-hidden="true" loading="lazy" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
       <div className="contact__glow" aria-hidden="true" />
       <div className="container" style={{ position: 'relative' }}>

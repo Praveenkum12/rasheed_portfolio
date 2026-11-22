@@ -107,6 +107,7 @@ export function Projects() {
 
   return (
     <section id="projects" className="section section--light" ref={root} aria-labelledby="proj-title">
+      <div className="sheet-shade" aria-hidden="true" />
       <div className="container">
         <SectionHeading index="05" label="Project Portfolio" id="proj-title" title="Proof of work."
           lead="Selected HSE programmes presented as case studies — background, responsibilities, activities and verified results." />
